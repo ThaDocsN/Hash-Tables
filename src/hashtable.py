@@ -15,6 +15,7 @@ class HashTable:
     def __init__(self, capacity):
         self.capacity = capacity  # Number of buckets in the hash table
         self.storage = [None] * capacity
+        self.count = 0
 
 
     def _hash(self, key):
@@ -51,7 +52,22 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        if self.count >= self.capacity:
+            self.resize()
+
+        index = self._hash_mod(key)
+        node = self.storage[index]
+        pair = LinkedPair(key, value)
+
+        while node is not None and self.storage[index].key is not key:
+            next_ = node
+            node = next_.next
+
+        if node is not None:
+            node.value = value
+        else:
+            pair.next = self.storage[index]
+            self.storage[index] = pair
 
 
 
@@ -63,7 +79,19 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        index = self._hash_mod(key)
+        node = self.storage[index]
+        next_node = None
+        while node is not None and node.key != key:
+            next_node = node
+            node = next_node.next
+        if node is None:
+            print("Can't find key")
+        else:
+            if next_node is None:
+                self.storage[index] = node.next
+            else:
+                next_node.next = node.next
 
 
     def retrieve(self, key):
@@ -74,7 +102,13 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        index = self._hash_mod(key)
+        node = self.storage[index]
+
+        while node is not None:
+            if node.key == key:
+                return node.value
+            node = node.next
 
 
     def resize(self):
@@ -84,7 +118,15 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        self.capacity *= 2
+        new_storage = [None] * self.capacity
+        for i in self.storage:
+            if i is not None:
+             index = self._hash_mod(i.key)
+             new_storage[index] = i
+        self.storage = new_storage
+
+
 
 
 
